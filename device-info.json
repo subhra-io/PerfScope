@@ -1,0 +1,15 @@
+{
+  "device_id": "def93dee",
+  "model": "CPH2691",
+  "manufacturer": "OnePlus",
+  "brand": "OnePlus",
+  "android_version": 35,
+  "android_release": "15",
+  "build_id": "UKQ1.231108.001",
+  "hardware": "qcom",
+  "ram_mb": 11214,
+  "screen_density": 560 480,
+  "screen_resolution": "1264x2780
+1080x2376",
+  "cpu_abi": "arm64-v8a"
+}

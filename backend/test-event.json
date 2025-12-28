@@ -1,0 +1,55 @@
+{
+  "api_key": "demo-api-key-12345",
+  "events": [
+    {
+      "event_type": "SESSION_START",
+      "timestamp": 1703123456789,
+      "app_id": "io.perfscope.demo",
+      "session_id": "test-session-123",
+      "screen": "DemoHome",
+      "sdk_version": "1.0.0",
+      "device": {
+        "model": "Pixel 6",
+        "manufacturer": "Google",
+        "android_version": 34,
+        "ram_mb": 8192,
+        "screen_density": 440,
+        "screen_resolution": "1080x2400"
+      },
+      "build": {
+        "version_name": "1.0.0",
+        "version_code": 1,
+        "build_type": "debug"
+      }
+    },
+    {
+      "event_type": "MEMORY_VIOLATION",
+      "timestamp": 1703123466789,
+      "app_id": "io.perfscope.demo",
+      "session_id": "test-session-123",
+      "screen": "BitmapViolationTest",
+      "violation_type": "BITMAP_SPIKE",
+      "actual_mb": 32,
+      "budget_mb": 10,
+      "severity": "CRITICAL",
+      "attribution": {
+        "likely_cause": "BITMAP_HEAVY",
+        "delta_mb": 32,
+        "details": "Check image loading, bitmap caching, or large graphics"
+      },
+      "device": {
+        "model": "Pixel 6",
+        "manufacturer": "Google",
+        "android_version": 34,
+        "ram_mb": 8192,
+        "screen_density": 440,
+        "screen_resolution": "1080x2400"
+      },
+      "build": {
+        "version_name": "1.0.0",
+        "version_code": 1,
+        "build_type": "debug"
+      }
+    }
+  ]
+}
