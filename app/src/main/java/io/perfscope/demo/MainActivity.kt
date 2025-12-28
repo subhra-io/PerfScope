@@ -20,23 +20,49 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
-        // Initialize PerfScope SDK with export enabled for demo
-        val configWithExport = PerfScopeConfig(
-            maxHeapMb = 100,           // Low threshold to trigger violations
-            maxScreenDeltaMb = 15,     // Strict screen memory growth
-            maxBitmapSpikeMb = 10,     // Low bitmap threshold
-            maxCollectionSpikeMb = 8,  // Low collection threshold
-            maxObjectSpikeMb = 5,      // Low object threshold
-            maxJankPercent = 2f,       // Very strict jank budget
-            maxFrameMs = 20f,          // Strict frame time budget
-            maxSevereJankMs = 30f,     // Low severe jank threshold
-            enableViolationAlerts = true,
-            enableFrameMonitoring = true,
-            enableExport = true,
-            exportEndpoint = "http://192.168.1.10:3001/api/events", // Real device connection
-            exportApiKey = "demo-api-key-12345"
-        )
-        PerfScope.init(this, configWithExport)
+        // Initialize PerfScope SDK with deployment-ready configuration
+        val config = when {
+            // Production deployment examples
+            BuildConfig.BUILD_TYPE == "release" -> {
+                // Example: Railway deployment
+                PerfScopeConfig.railway("your-production-api-key")
+                
+                // Alternative examples:
+                // PerfScopeConfig.render("your-production-api-key")
+                // PerfScopeConfig.vercel("your-production-api-key")
+                // PerfScopeConfig.production("https://your-backend.com/api/events", "your-api-key")
+            }
+            
+            // Staging deployment
+            BuildConfig.BUILD_TYPE == "staging" -> {
+                PerfScopeConfig.staging(
+                    endpoint = "https://perfscope-backend-staging.railway.app/api/events",
+                    apiKey = "staging-api-key"
+                )
+            }
+            
+            // Development with local backend
+            else -> {
+                PerfScopeConfig.withExport(
+                    endpoint = "http://192.168.1.10:3001/api/events", // Replace with your local IP
+                    apiKey = "demo-api-key-12345"
+                ).copy(
+                    // Strict budgets for development to catch issues early
+                    maxHeapMb = 100,           // Low threshold to trigger violations
+                    maxScreenDeltaMb = 15,     // Strict screen memory growth
+                    maxBitmapSpikeMb = 10,     // Low bitmap threshold
+                    maxCollectionSpikeMb = 8,  // Low collection threshold
+                    maxObjectSpikeMb = 5,      // Low object threshold
+                    maxJankPercent = 2f,       // Very strict jank budget
+                    maxFrameMs = 20f,          // Strict frame time budget
+                    maxSevereJankMs = 30f,     // Low severe jank threshold
+                    enableViolationAlerts = true,
+                    enableFrameMonitoring = true
+                )
+            }
+        }
+        
+        PerfScope.init(this, config)
         
         enableEdgeToEdge()
         setContent {

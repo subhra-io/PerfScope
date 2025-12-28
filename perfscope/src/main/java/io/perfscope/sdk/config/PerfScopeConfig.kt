@@ -1,6 +1,15 @@
 package io.perfscope.sdk.config
 
 /**
+ * Environment types for different deployment scenarios
+ */
+enum class Environment {
+    DEVELOPMENT,
+    STAGING,
+    PRODUCTION
+}
+
+/**
  * Configuration for performance budgets and thresholds.
  * Defines what is acceptable vs. what constitutes a violation.
  */
@@ -35,7 +44,16 @@ data class PerfScopeConfig(
     // Export Settings
     val enableExport: Boolean = false,
     val exportEndpoint: String? = null,
-    val exportApiKey: String? = null
+    val exportApiKey: String? = null,
+    val exportBatchSize: Int = 10,
+    val exportTimeoutMs: Long = 30000,
+    val exportRetryAttempts: Int = 3,
+    val exportRetryDelayMs: Long = 1000,
+    
+    // Environment Settings
+    val environment: Environment = Environment.DEVELOPMENT,
+    val enableDebugLogs: Boolean = true,
+    val enableNetworkLogs: Boolean = false
 ) {
     companion object {
         /**
@@ -49,7 +67,30 @@ data class PerfScopeConfig(
             maxFrameMs = 20f,              // Strict frame time budget
             enableViolationAlerts = true,
             enableFrameMonitoring = true,
-            enableExport = false           // Disabled by default in dev
+            enableExport = false,          // Disabled by default in dev
+            environment = Environment.DEVELOPMENT,
+            enableDebugLogs = true,
+            enableNetworkLogs = true
+        )
+        
+        /**
+         * Configuration for staging environment
+         */
+        fun staging(endpoint: String, apiKey: String) = PerfScopeConfig(
+            maxHeapMb = 130,
+            maxScreenDeltaMb = 18,
+            maxBitmapSpikeMb = 12,
+            maxJankPercent = 5f,
+            maxFrameMs = 25f,
+            enableViolationAlerts = true,
+            enableFrameMonitoring = true,
+            enableExport = true,
+            exportEndpoint = endpoint,
+            exportApiKey = apiKey,
+            exportBatchSize = 5,           // Smaller batches for staging
+            environment = Environment.STAGING,
+            enableDebugLogs = true,
+            enableNetworkLogs = true
         )
         
         /**
@@ -59,6 +100,53 @@ data class PerfScopeConfig(
             enableExport = true,
             exportEndpoint = endpoint,
             exportApiKey = apiKey
+        )
+        
+        /**
+         * Production configuration for Railway deployment
+         */
+        fun railway(apiKey: String) = production(
+            endpoint = "https://perfscope-backend.railway.app/api/events",
+            apiKey = apiKey
+        )
+        
+        /**
+         * Production configuration for Render deployment
+         */
+        fun render(apiKey: String) = production(
+            endpoint = "https://perfscope-backend.onrender.com/api/events",
+            apiKey = apiKey
+        )
+        
+        /**
+         * Production configuration for Vercel deployment
+         */
+        fun vercel(apiKey: String) = production(
+            endpoint = "https://perfscope-backend.vercel.app/api/events",
+            apiKey = apiKey
+        )
+        
+        /**
+         * Custom production configuration
+         */
+        fun production(endpoint: String, apiKey: String) = PerfScopeConfig(
+            maxHeapMb = 120,
+            maxScreenDeltaMb = 15,
+            maxBitmapSpikeMb = 10,
+            maxCollectionSpikeMb = 12,
+            maxJankPercent = 8f,           // More lenient for production
+            maxFrameMs = 30f,              // More lenient frame time
+            enableViolationAlerts = false, // Don't show UI in production
+            trackViolationHistory = true,
+            enableFrameMonitoring = true,
+            enableExport = true,
+            exportEndpoint = endpoint,
+            exportApiKey = apiKey,
+            exportBatchSize = 20,          // Larger batches for production
+            exportTimeoutMs = 15000,       // Shorter timeout for production
+            environment = Environment.PRODUCTION,
+            enableDebugLogs = false,       // Disable debug logs in production
+            enableNetworkLogs = false
         )
         
         /**
@@ -74,7 +162,10 @@ data class PerfScopeConfig(
             enableViolationAlerts = false, // Don't show UI in production
             trackViolationHistory = true,
             enableFrameMonitoring = true,
-            enableExport = true            // Enable export in production
+            enableExport = false,          // Needs explicit endpoint
+            environment = Environment.PRODUCTION,
+            enableDebugLogs = false,
+            enableNetworkLogs = false
         )
         
         /**

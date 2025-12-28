@@ -47,6 +47,14 @@ object PerfScope {
             screenTracker.initialize(appContext)
         }
         
+        // Log initialization for debugging
+        if (config.enableDebugLogs) {
+            android.util.Log.i("PerfScope", "SDK initialized with ${config.environment} configuration")
+            if (config.enableExport) {
+                android.util.Log.i("PerfScope", "Export enabled to: ${config.exportEndpoint}")
+            }
+        }
+        
         isInitialized = true
     }
     
@@ -89,6 +97,7 @@ object PerfScope {
     fun setCurrentScreen(screenName: String) {
         if (isInitialized) {
             screenTracker.setCurrentScreen(screenName)
+            overlayManager.onScreenChange(screenName)
         }
     }
     
