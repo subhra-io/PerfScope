@@ -1,0 +1,59 @@
+name: Deploy Frontend
+
+on:
+  push:
+    branches: [main]
+    paths: ['web-portal/**']
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: web-portal/package-lock.json
+
+      - name: Install dependencies
+        working-directory: web-portal
+        run: npm ci
+
+      - name: Run TypeScript check
+        working-directory: web-portal
+        run: npm run type-check
+
+      - name: Run linting
+        working-directory: web-portal
+        run: npm run lint
+
+      - name: Build application
+        working-directory: web-portal
+        run: npm run build
+        env:
+          NEXT_PUBLIC_API_URL: https://perfscope-backend.railway.app
+          NEXT_PUBLIC_WS_URL: wss://perfscope-backend.railway.app
+
+  deploy-vercel:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          working-directory: web-portal
+          scope: ${{ secrets.VERCEL_ORG_ID }}

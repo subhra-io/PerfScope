@@ -31,14 +31,21 @@ fun YourScreen() {
 }
 ```
 
-### 3. Deploy backend (optional)
+### 3. Deploy backend
 
+**Railway (Recommended):**
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/perfscope-backend)
+
+**Render:**
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/subhra-io/PerfScope)
+
+**Manual deployment:**
 ```bash
 cd backend
-docker-compose up -d
+# See backend/DEPLOYMENT.md for detailed instructions
 ```
 
-### 4. Deploy web dashboard (optional)
+### 4. Deploy web dashboard
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/subhra-io/PerfScope&project-name=perfscope-dashboard&repository-name=perfscope-dashboard&root-directory=web-portal)
 
