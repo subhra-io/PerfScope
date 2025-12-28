@@ -51,6 +51,10 @@ END_TO_END_INTEGRATION_SUCCESS.md
 PERFSCOPE_*.md
 QUICK_START_*.md
 
+# Allow deployment guides
+!COMPLETE_DEPLOYMENT_GUIDE.md
+!ANDROID_DEPLOYMENT_GUIDE.md
+
 # Demo and test scripts (keep locally)
 demo-*.sh
 test-*.sh
