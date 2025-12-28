@@ -13,3 +13,64 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Node.js (for backend)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Next.js build output
+.next
+out
+
+# Backend build
+backend/dist/
+backend/logs/
+
+# Documentation files (keep locally, don't push to GitHub)
+*_SUMMARY.md
+*_GUIDE.md
+*_TEMPLATES.md
+*_DESCRIPTION.md
+*_SUCCESS.md
+*_INTEGRATION*.md
+EXPORT_INTEGRATION_SUMMARY.md
+END_TO_END_INTEGRATION_SUCCESS.md
+PERFSCOPE_*.md
+QUICK_START_*.md
+
+# Demo and test scripts (keep locally)
+demo-*.sh
+test-*.sh
+monitor-*.sh
+setup-*.sh
+get-device-info.sh
+simulate-*.sh
+
+# Test data files
+test-event.json
+device-info.json
+backend/test-server.js
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

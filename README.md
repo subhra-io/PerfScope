@@ -1,260 +1,110 @@
-# PerfScope SDK
+# 🚀 PerfScope - Real-time Performance Monitoring for Android
 
-A LeakCanary-style Android SDK that provides real-time visibility into app performance, memory usage, and app size directly inside the running app, without attaching a profiler.
+PerfScope is a production-ready performance monitoring platform for Android applications that provides real-time visibility into app performance, memory usage, and user experience quality.
 
-## 🎯 Key Features: System Health + User Experience Enforcement
+## ✨ Features
 
-**From Observability to Engineering Enforcement** - PerfScope enforces both system health and user experience budgets:
+- **🧠 Intelligent Performance Attribution** - Automatic detection of memory leaks, jank, and performance violations
+- **📊 Real-time Monitoring** - Live performance overlay and instant violation alerts
+- **🎯 Performance Budget Enforcement** - Configurable thresholds with automatic enforcement
+- **🌐 Production-ready Backend** - High-throughput event ingestion with web dashboard
+- **📱 Screen-level Tracking** - Performance issues tied to specific app screens
 
-### System Health (Memory Budgets)
-```kotlin
-PerfScopeConfig(
-    maxHeapMb = 180,
-    maxScreenDeltaMb = 25,
-    maxBitmapSpikeMb = 20
-)
-```
+## 🚀 Quick Start
 
-### User Experience (Frame Budgets)
-```kotlin
-PerfScopeConfig(
-    maxJankPercent = 3f,      // Max 3% jank frames
-    maxFrameMs = 24f,         // Max 24ms per frame (~42fps)
-    maxSevereJankMs = 50f     // Severe jank threshold
-)
-```
-
-**Instead of just showing metrics, PerfScope shows actionable violations:**
-
-```
-⚠️ Performance Violation
-Main Thread Blocking Jank
-Actual: 8.5% | Budget: 3%
-💡 Move long operations to background threads
-```
-
-This balances PerfScope across **system health** (memory) and **user experience** (frame timing) - exactly what real teams need.
-
-## Features
-
-- 📊 **Real-time Performance Monitoring**: Track memory usage, frame rate, CPU usage, and app size
-- 🎯 **Memory Attribution**: Identifies which screen and what type of operations caused memory changes
-- 🎬 **Frame/Jank Attribution**: Choreographer-based frame timing with jank classification
-- 🚨 **Performance Budget Enforcement**: Define acceptable limits for both system and UX metrics
-- 🔍 **Smart Classification**: 
-  - Memory: bitmap-heavy, collection-heavy, native-heavy, object-heavy
-  - Jank: main-thread blocking, layout thrash, heavy recomposition, overdraw
-- ⚖️ **Configurable Budgets**: Different configs for development, production, and performance-critical apps
-- 🎨 **Compose-based UI**: Modern, clean overlay interface with violation alerts
-- 🔧 **Easy Integration**: Simple API with minimal setup required
-- 📱 **Non-intrusive**: Optional overlay that can be shown/hidden on demand
-- 📈 **Screen Tracking**: Automatic activity tracking with manual screen naming support
-
-## Frame/Jank Attribution System
-
-### Choreographer-Based Monitoring
-
-PerfScope uses Android's Choreographer for precise frame timing measurement:
-
-- **Real Frame Times**: Actual frame durations, not estimates
-- **Jank Detection**: Frames >16.67ms (60fps) classified as jank
-- **Pattern Analysis**: Identifies jank causes through timing patterns
-
-### Jank Classification Types
-
-- **Main Thread Blocking**: Long-running operations blocking UI (>100ms frames)
-- **Layout Thrash**: Excessive layout calculations (consistent 30-50ms frames)
-- **Heavy Recomposition**: Compose recomposition issues (frequent 20-35ms frames)
-- **Overdraw**: Too many overlapping draw operations (consistent moderate jank)
-- **Memory Pressure**: GC pauses causing frame drops (sporadic severe jank)
-- **GPU Bottleneck**: Graphics processing delays (high average frame time)
-
-### Frame Budget Enforcement
+### 1. Add PerfScope SDK to your Android project
 
 ```kotlin
-// Development - Strict UX budgets
-val devConfig = PerfScopeConfig(
-    maxJankPercent = 2f,       // Very strict jank budget
-    maxFrameMs = 20f,          // Strict frame timing
-    maxSevereJankMs = 30f,     // Low severe jank threshold
-    enableFrameMonitoring = true
-)
-
-// Performance-Critical - Ultra-strict
-val criticalConfig = PerfScopeConfig.performanceCritical()
-// maxJankPercent = 1f, maxFrameMs = 16.67f (60fps strict)
+// In your MainActivity
+PerfScope.init(this, PerfScopeConfig.development())
 ```
 
-## Performance Budget System
-
-### Budget Configuration
+### 2. Add screen tracking (optional)
 
 ```kotlin
-// Development - Strict budgets for catching issues early
-val devConfig = PerfScopeConfig(
-    // Memory Budgets
-    maxHeapMb = 150,
-    maxScreenDeltaMb = 20,
-    maxBitmapSpikeMb = 15,
-    
-    // Frame/UX Budgets  
-    maxJankPercent = 3f,
-    maxFrameMs = 24f,
-    maxSevereJankMs = 50f,
-    
-    enableViolationAlerts = true,
-    enableFrameMonitoring = true
-)
-
-// Production - Monitoring without UI alerts
-val prodConfig = PerfScopeConfig.production()
-
-// Performance-Critical - Ultra-strict budgets
-val criticalConfig = PerfScopeConfig.performanceCritical()
-```
-
-### Violation Types
-
-**Memory Violations:**
-- Heap Memory, Screen Memory Delta, Bitmap/Collection/Object/Native Spikes
-
-**Frame/UX Violations:**
-- Jank Percentage, Frame Time, Severe Jank
-
-**System Violations:**
-- Frame Rate Drop, CPU Usage, App Size
-
-### Why This Matters
-
-- **Memory bugs hurt devices** (crashes, slowdowns)
-- **Jank hurts users** (poor experience, app abandonment)
-- **PerfScope enforces both** (comprehensive performance engineering)
-
-## Project Structure
-
-```
-PerfScopeSdk/
-├── app/          # Demo application with frame/jank violation tests
-├── perfscope/    # The SDK library module
-│   ├── budget/          # Performance budget engine
-│   ├── config/          # Budget configuration
-│   ├── attribution/     # Memory & frame attribution engines
-│   ├── tracking/        # Screen tracking system
-│   ├── monitoring/      # Performance & frame monitoring
-│   ├── ui/             # Compose UI components
-│   └── data/           # Data models
-└── gradle/       # Build configuration
-```
-
-## Quick Start
-
-### 1. Add SDK Dependency
-
-In your app's `build.gradle.kts`:
-
-```kotlin
-dependencies {
-    implementation(project(":perfscope"))
-}
-```
-
-### 2. Initialize SDK with Budget Configuration
-
-In your `MainActivity.onCreate()`:
-
-```kotlin
-import io.perfscope.sdk.PerfScope
-import io.perfscope.sdk.config.PerfScopeConfig
-
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        
-        // Initialize with frame/jank monitoring
-        val config = PerfScopeConfig(
-            // Memory budgets
-            maxHeapMb = 180,
-            maxScreenDeltaMb = 25,
-            maxBitmapSpikeMb = 20,
-            
-            // Frame/UX budgets
-            maxJankPercent = 3f,
-            maxFrameMs = 24f,
-            
-            enableViolationAlerts = true,
-            enableFrameMonitoring = true
-        )
-        PerfScope.init(this, config)
-        
-        setContent {
-            YourAppTheme {
-                YourMainScreen()
-                PerfScope.OverlayContent()
-            }
-        }
+@Composable
+fun YourScreen() {
+    LaunchedEffect(Unit) {
+        PerfScope.setCurrentScreen("YourScreen")
     }
+    // Your existing UI code
 }
 ```
 
-### 3. Use Performance Budget Enforcement
-
-```kotlin
-// Show performance overlay with violations
-PerfScope.showOverlay()
-
-// Switch to performance-critical budgets
-PerfScope.updateBudgetConfig(PerfScopeConfig.performanceCritical())
-
-// Manual screen tracking for attribution
-PerfScope.setCurrentScreen("UserProfile")
-```
-
-## Demo App Features
-
-The demo app includes comprehensive violation tests:
-
-- **Memory Violation Tests**: Bitmap, collection, and object allocation tests
-- **Frame/Jank Violation Tests**: Main thread blocking, layout thrash, Compose jank
-- **Budget Configuration**: Switch between relaxed, strict, and performance-critical budgets
-- **Real-time Attribution**: See both memory and frame attribution as violations happen
-
-## Performance Engineering Impact
-
-### Development Workflow
-1. **Strict Budgets**: Catch both memory and UX regressions early
-2. **Immediate Feedback**: See violations as you code
-3. **Attribution Insights**: Know exactly what caused the issue
-4. **Team Standards**: Enforce consistent performance across team
-
-### User Experience Focus
-1. **Jank Prevention**: Catch frame drops before users notice
-2. **Smooth Performance**: Maintain 60fps standards
-3. **Attribution Context**: Know which screens cause jank
-4. **Proactive Optimization**: Fix UX issues during development
-
-## Building the Project
+### 3. Deploy backend (optional)
 
 ```bash
-./gradlew assembleDebug
+cd backend
+docker-compose up -d
 ```
 
-## Requirements
+## 📱 Integration
 
-- Android API 23+
-- Kotlin
-- Jetpack Compose
+### Add to your project
 
-## Next Steps
+1. Copy the `perfscope/` module to your project
+2. Add to `settings.gradle.kts`: `include(":perfscope")`
+3. Add dependency: `implementation(project(":perfscope"))`
+4. Add network permissions to `AndroidManifest.xml`
 
-Future enhancements:
+### Configuration Options
 
-1. **Network Attribution**: API call performance per screen
-2. **Battery Attribution**: Power consumption by screen/feature  
-3. **CI/CD Integration**: Automated budget enforcement in build pipelines
-4. **Performance Profiles**: Different budgets per feature/screen
-5. **Historical Analytics**: Long-term performance trend analysis
-6. **Custom Jank Detection**: App-specific jank pattern recognition
+```kotlin
+// Development
+val devConfig = PerfScopeConfig.development()
 
-## License
+// Production with export
+val prodConfig = PerfScopeConfig.withExport(
+    endpoint = "https://your-backend.com/api/events",
+    apiKey = "your-api-key"
+)
 
-This project is a demonstration SDK for educational purposes.
+// Custom configuration
+val customConfig = PerfScopeConfig(
+    maxHeapMb = 150,
+    maxJankPercent = 2f,
+    enableExport = true
+)
+```
+
+## 🏗️ Architecture
+
+- **📱 Android SDK (Kotlin)** - Performance monitoring library
+- **🖥️ Backend API (Node.js + TypeScript)** - Event processing and storage
+- **📊 Web Dashboard (React + Next.js)** - Real-time monitoring interface
+
+## 🎯 Use Cases
+
+- **E-commerce Apps** - Monitor product loading and checkout performance
+- **Gaming Apps** - Ensure consistent 60 FPS gameplay
+- **Social Media Apps** - Optimize feed scrolling and media loading
+- **Enterprise Apps** - Monitor business-critical workflows
+
+## 📊 What You Get
+
+- **Automatic detection** of memory leaks, jank, and performance violations
+- **Root cause analysis** with specific recommendations
+- **Real-time monitoring** across all users and devices
+- **Professional dashboard** with charts and alerts
+- **Screen-level attribution** for precise debugging
+
+## 🔧 Requirements
+
+- **Android**: API 21+ (Android 5.0)
+- **Kotlin**: 1.8+
+- **Compose**: Optional (for UI overlay)
+- **Backend**: Node.js 18+ (optional)
+
+## 📄 License
+
+MIT License - see LICENSE file for details.
+
+## 🤝 Contributing
+
+Contributions are welcome! Please read our contributing guidelines and submit pull requests.
+
+---
+
+**PerfScope: Professional Performance Monitoring for Android Apps**
+
+*Stop guessing why your app is slow. Start knowing exactly what to fix.*
