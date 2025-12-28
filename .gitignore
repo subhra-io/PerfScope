@@ -28,6 +28,9 @@ yarn-error.log*
 .env.test.local
 .env.production.local
 
+# Vercel
+.vercel
+
 # Next.js build output
 .next
 out

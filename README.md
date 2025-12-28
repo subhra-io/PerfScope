@@ -38,6 +38,12 @@ cd backend
 docker-compose up -d
 ```
 
+### 4. Deploy web dashboard (optional)
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/subhra-io/PerfScope&project-name=perfscope-dashboard&repository-name=perfscope-dashboard&root-directory=web-portal)
+
+Or see [web-portal/DEPLOYMENT.md](web-portal/DEPLOYMENT.md) for detailed instructions.
+
 ## 📱 Integration
 
 ### Add to your project
@@ -72,6 +78,7 @@ val customConfig = PerfScopeConfig(
 - **📱 Android SDK (Kotlin)** - Performance monitoring library
 - **🖥️ Backend API (Node.js + TypeScript)** - Event processing and storage
 - **📊 Web Dashboard (React + Next.js)** - Real-time monitoring interface
+- **☁️ Cloud Ready** - Deploy on Vercel, Railway, or any cloud platform
 
 ## 🎯 Use Cases
 
